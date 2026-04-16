@@ -3,7 +3,7 @@
     <div class="gradient-layer" :style="gradientStyle"></div>
 
     <div
-      v-if="animated && !isMobile"
+      v-if="animated"
       class="pattern-layer"
       :class="currentPattern"
     >
@@ -291,15 +291,15 @@ export default {
   data() {
     return {
       palette: {
-        base: '#F0EEDA',
-        mid: '#F0EADF',
-        highlight: '#EAE3B2',
-        accent1: '#87DFE4',
-        accent2: '#DAE6DB',
-        themeName: 'warm',
+        base: '#667eea',
+        mid: '#764ba2',
+        highlight: '#f093fb',
+        accent1: '#4facfe',
+        accent2: '#43e97b',
+        themeName: 'default',
         seed: 0
       },
-      currentPattern: 'fog',
+      currentPattern: 'particles',
       isPaused: false,
       refreshTimer: null
     };
@@ -313,9 +313,6 @@ export default {
     todayPatternName() {
       const index = this.palette.seed % 6;
       return PATTERN_TYPES[index];
-    },
-    isMobile() {
-      return window.matchMedia('(hover: none)').matches;
     }
   },
   mounted() {
@@ -374,27 +371,27 @@ export default {
 }
 
 .pattern-layer.fog {
-  opacity: 0.4;
+  opacity: 0.8;
 }
 
 .pattern-layer.breath {
-  opacity: 0.5;
+  opacity: 0.9;
 }
 
 .pattern-layer.aurora {
-  opacity: 0.35;
+  opacity: 0.8;
 }
 
 .pattern-layer.particles {
-  opacity: 0.6;
+  opacity: 1;
 }
 
 .pattern-layer.ripple {
-  opacity: 0.3;
+  opacity: 0.9;
 }
 
 .pattern-layer.texture {
-  opacity: 0.2;
+  opacity: 0.6;
 }
 
 .content-wrapper {
@@ -410,7 +407,7 @@ export default {
 }
 
 .fog-ellipse {
-  opacity: 0.6;
+  opacity: 0.8;
   will-change: transform;
 }
 
@@ -460,11 +457,11 @@ export default {
 @keyframes breath-pulse {
   0%, 100% {
     transform: scale(0.8);
-    opacity: 0.4;
+    opacity: 0.6;
   }
   50% {
     transform: scale(1.2);
-    opacity: 0.7;
+    opacity: 0.9;
   }
 }
 
@@ -474,7 +471,7 @@ export default {
 }
 
 .aurora-path {
-  opacity: 0.5;
+  opacity: 0.7;
   animation: aurora-wave 15s ease-in-out infinite;
   will-change: transform;
 }
@@ -509,7 +506,7 @@ export default {
   position: absolute;
   width: 100px;
   height: 100px;
-  border: 2px solid;
+  border: 3px solid;
   border-radius: 50%;
   transform: translate(-50%, -50%);
   animation: ripple-expand 4s ease-out forwards;
@@ -519,10 +516,10 @@ export default {
 @keyframes ripple-expand {
   0% {
     transform: translate(-50%, -50%) scale(0);
-    opacity: 0.8;
+    opacity: 1;
   }
   100% {
-    transform: translate(-50%, -50%) scale(3);
+    transform: translate(-50%, -50%) scale(4);
     opacity: 0;
   }
 }
@@ -534,11 +531,5 @@ export default {
 
 .texture-rect {
   mix-blend-mode: overlay;
-}
-
-@media (hover: none) {
-  .pattern-layer {
-    display: none;
-  }
 }
 </style>

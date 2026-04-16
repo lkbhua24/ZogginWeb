@@ -42,9 +42,9 @@ export const useVocabStore = defineStore('vocab', {
           pos: 'adj.',
           meanings: ['短暂的', '转瞬即逝的', '朝生暮死的'],
           examples: [
-            'The ephemeral beauty of cherry blossoms.',
-            'Fame is often ephemeral in the entertainment industry.',
-            'These ephemeral moments of joy are precious.'
+            { en: 'The ephemeral beauty of cherry blossoms.', cn: '樱花转瞬即逝的美。' },
+            { en: 'Fame is often ephemeral in the entertainment industry.', cn: '在娱乐圈，名声往往是短暂的。' },
+            { en: 'These ephemeral moments of joy are precious.', cn: '这些短暂的快乐时刻弥足珍贵。' }
           ],
           phrases: [
             { en: 'ephemeral beauty', cn: '短暂的美' },
@@ -62,8 +62,8 @@ export const useVocabStore = defineStore('vocab', {
           pos: 'adj.',
           meanings: ['无处不在的', '普遍存在的'],
           examples: [
-            'Smartphones have become ubiquitous in modern life.',
-            'The ubiquitous presence of advertising is hard to ignore.'
+            { en: 'Smartphones have become ubiquitous in modern life.', cn: '智能手机在现代生活中已经无处不在。' },
+            { en: 'The ubiquitous presence of advertising is hard to ignore.', cn: '广告无处不在的存在让人难以忽视。' }
           ],
           phrases: [
             { en: 'ubiquitous presence', cn: '无处不在的存在' },
@@ -81,8 +81,8 @@ export const useVocabStore = defineStore('vocab', {
           pos: 'n.',
           meanings: ['意外发现', '机缘巧合', '意外的好运'],
           examples: [
-            'It was pure serendipity that we met at the conference.',
-            'Many scientific discoveries are the result of serendipity.'
+            { en: 'It was pure serendipity that we met at the conference.', cn: '我们在会议上相遇纯属机缘巧合。' },
+            { en: 'Many scientific discoveries are the result of serendipity.', cn: '许多科学发现都是机缘巧合的结果。' }
           ],
           phrases: [
             { en: 'pure serendipity', cn: '纯粹的机缘巧合' },
@@ -100,8 +100,8 @@ export const useVocabStore = defineStore('vocab', {
           pos: 'adj.',
           meanings: ['雄辩的', '有说服力的', '口才流利的'],
           examples: [
-            'She gave an eloquent speech about climate change.',
-            'His eloquent arguments convinced the jury.'
+            { en: 'She gave an eloquent speech about climate change.', cn: '她就气候变化发表了雄辩的演讲。' },
+            { en: 'His eloquent arguments convinced the jury.', cn: '他有说服力的论点说服了陪审团。' }
           ],
           phrases: [
             { en: 'eloquent speech', cn: '雄辩的演讲' },
@@ -119,8 +119,8 @@ export const useVocabStore = defineStore('vocab', {
           pos: 'adj.',
           meanings: ['务实的', '实用主义的', '注重实效的'],
           examples: [
-            'We need a pragmatic approach to solve this problem.',
-            'She is known for her pragmatic leadership style.'
+            { en: 'We need a pragmatic approach to solve this problem.', cn: '我们需要一种务实的方法来解决这个问题。' },
+            { en: 'She is known for her pragmatic leadership style.', cn: '她以务实的领导风格而闻名。' }
           ],
           phrases: [
             { en: 'pragmatic approach', cn: '务实的方法' },
@@ -138,8 +138,8 @@ export const useVocabStore = defineStore('vocab', {
           pos: 'adj.',
           meanings: ['模棱两可的', '含糊不清的', '有歧义的'],
           examples: [
-            'The contract was written in ambiguous language.',
-            'His response was deliberately ambiguous.'
+            { en: 'The contract was written in ambiguous language.', cn: '这份合同是用模棱两可的语言写成的。' },
+            { en: 'His response was deliberately ambiguous.', cn: '他的回应故意含糊其辞。' }
           ],
           phrases: [
             { en: 'ambiguous statement', cn: '模棱两可的声明' },
@@ -157,8 +157,8 @@ export const useVocabStore = defineStore('vocab', {
           pos: 'adj.',
           meanings: ['一丝不苟的', '细致的', '小心翼翼的'],
           examples: [
-            'She is meticulous about her research.',
-            'The detective conducted a meticulous investigation.'
+            { en: 'She is meticulous about her research.', cn: '她对研究一丝不苟。' },
+            { en: 'The detective conducted a meticulous investigation.', cn: '侦探进行了细致的调查。' }
           ],
           phrases: [
             { en: 'meticulous attention to detail', cn: '对细节的一丝不苟' },
@@ -176,8 +176,8 @@ export const useVocabStore = defineStore('vocab', {
           pos: 'adj.',
           meanings: ['坚韧的', '顽强的', '紧抓不放的'],
           examples: [
-            'A tenacious competitor never gives up.',
-            'Her tenacious efforts finally paid off.'
+            { en: 'A tenacious competitor never gives up.', cn: '坚韧的竞争者永不放弃。' },
+            { en: 'Her tenacious efforts finally paid off.', cn: '她坚韧的努力终于得到了回报。' }
           ],
           phrases: [
             { en: 'tenacious spirit', cn: '坚韧的精神' },
@@ -195,8 +195,8 @@ export const useVocabStore = defineStore('vocab', {
           pos: 'adj.',
           meanings: ['仁慈的', '慈善的', '乐善好施的'],
           examples: [
-            'The benevolent donor funded the new library.',
-            'She has a benevolent smile that puts everyone at ease.'
+            { en: 'The benevolent donor funded the new library.', cn: '这位仁慈的捐赠者为新图书馆提供了资金。' },
+            { en: 'She has a benevolent smile that puts everyone at ease.', cn: '她慈祥的微笑让每个人都感到放松。' }
           ],
           phrases: [
             { en: 'benevolent dictator', cn: '仁慈的独裁者' },
@@ -214,8 +214,8 @@ export const useVocabStore = defineStore('vocab', {
           pos: 'adj.',
           meanings: ['有弹性的', '能迅速恢复的', '适应力强的'],
           examples: [
-            'Children are often more resilient than adults.',
-            'The resilient economy bounced back quickly.'
+            { en: 'Children are often more resilient than adults.', cn: '孩子通常比成年人更有韧性。' },
+            { en: 'The resilient economy bounced back quickly.', cn: '具有弹性的经济迅速反弹。' }
           ],
           phrases: [
             { en: 'resilient material', cn: '弹性材料' },

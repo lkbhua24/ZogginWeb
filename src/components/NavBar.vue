@@ -30,7 +30,7 @@
     </div>
   </nav>
 
-  <header v-else class="navbar app">
+  <header v-else class="navbar app" :style="gradientStyle">
     <div class="navbar-inner">
       <a class="navbar-logo text-logo" @click.prevent="handleLogoClick">ZogginWeb</a>
 
@@ -197,6 +197,7 @@
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '../stores/userStore'
+import { generateTodayPalette, generateGradient } from '../utils/colorEngine.js'
 import LogoutConfirm from './LogoutConfirm.vue'
 
 const router = useRouter()
@@ -208,6 +209,12 @@ const drawerOpen = ref(false)
 const userMenuOpen = ref(false)
 const showLogoutConfirm = ref(false)
 const userMenuRef = ref(null)
+
+// 动态渐变背景
+const palette = ref(generateTodayPalette())
+const gradientStyle = computed(() => ({
+  background: generateGradient(palette.value)
+}))
 
 const userInitial = computed(() => {
   return (userStore.userName || '学').charAt(0).toUpperCase()
@@ -327,8 +334,7 @@ onUnmounted(() => {
 }
 
 .navbar.app {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  color: #181D27;
 }
 
 .navbar-inner {
@@ -347,7 +353,7 @@ onUnmounted(() => {
   gap: 0.5rem;
   font-size: 1.25rem;
   font-weight: 800;
-  color: white;
+  color: #181D27;
   cursor: pointer;
   user-select: none;
   flex-shrink: 0;
@@ -359,7 +365,7 @@ onUnmounted(() => {
 }
 
 .navbar.landing.scrolled .navbar-logo {
-  color: #333;
+  color: #181D27;
 }
 
 .navbar-links {
@@ -373,7 +379,8 @@ onUnmounted(() => {
 }
 
 .landing-links a {
-  color: rgba(255, 255, 255, 0.85);
+  color: #181D27;
+  opacity: 0.85;
   text-decoration: none;
   font-size: 0.95rem;
   font-weight: 500;
@@ -382,15 +389,18 @@ onUnmounted(() => {
 }
 
 .landing-links a:hover {
-  color: white;
+  color: #181D27;
+  opacity: 1;
 }
 
 .navbar.landing.scrolled .landing-links a {
-  color: #666;
+  color: #181D27;
+  opacity: 0.85;
 }
 
 .navbar.landing.scrolled .landing-links a:hover {
-  color: #667eea;
+  color: #181D27;
+  opacity: 1;
 }
 
 .app-links {
@@ -399,8 +409,8 @@ onUnmounted(() => {
 }
 
 .nav-link {
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
+  background: rgba(24, 29, 39, 0.1);
+  color: #181D27;
   border: none;
   padding: 0.5rem 1.5rem;
   border-radius: 6px;
@@ -412,11 +422,11 @@ onUnmounted(() => {
 }
 
 .nav-link:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(24, 29, 39, 0.15);
 }
 
 .nav-link.active {
-  background: rgba(255, 255, 255, 0.4);
+  background: rgba(24, 29, 39, 0.2);
   font-weight: bold;
 }
 
@@ -486,20 +496,20 @@ onUnmounted(() => {
 }
 
 .user-trigger:hover {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(24, 29, 39, 0.08);
 }
 
 .user-avatar {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.25);
+  background: rgba(24, 29, 39, 0.15);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 0.85rem;
   font-weight: 700;
-  color: white;
+  color: #181D27;
   flex-shrink: 0;
 }
 
@@ -511,7 +521,7 @@ onUnmounted(() => {
 
 .user-name {
   font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.95);
+  color: #181D27;
   font-weight: 600;
   max-width: 80px;
   overflow: hidden;
@@ -521,11 +531,13 @@ onUnmounted(() => {
 
 .user-days {
   font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.65);
+  color: #181D27;
+  opacity: 0.65;
 }
 
 .chevron {
-  color: rgba(255, 255, 255, 0.6);
+  color: #181D27;
+  opacity: 0.6;
   transition: transform 0.2s;
   flex-shrink: 0;
 }
@@ -596,14 +608,14 @@ onUnmounted(() => {
   display: none;
   background: none;
   border: none;
-  color: white;
+  color: #181D27;
   cursor: pointer;
   padding: 0.25rem;
   flex-shrink: 0;
 }
 
 .navbar.landing.scrolled .hamburger-btn {
-  color: #333;
+  color: #181D27;
 }
 
 .drawer-overlay {
