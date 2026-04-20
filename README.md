@@ -31,6 +31,53 @@
 
 ### 最新优化功能
 
+#### 全屏专注模式
+沉浸式学习体验，屏蔽一切干扰
+- 一键进入/退出全屏（快捷键 F）
+- 专注模式下自动屏蔽非学习相关通知
+- 安全区域保护，防止误触退出
+- 支持 Chrome、Edge、Firefox、Safari 全屏 API
+
+#### 角落统计面板
+右下角悬浮统计，实时掌握学习进度
+- 学习时长、单词数量、学习次数一目了然
+- 每日目标进度条
+- 自动刷新，鼠标悬停展开详情
+- 全屏模式自动隐藏
+
+#### 快捷键系统
+高效操作，键盘党福音
+- `Space` - 翻转卡片
+- `1/2/3` - 标记忘记/模糊/认识
+- `F` - 全屏切换
+- `Esc` - 退出/返回
+- `Ctrl+B` - 切换导航栏
+- 支持自定义快捷键配置
+
+#### 浏览器兼容性
+全面支持主流浏览器
+- Chrome 90+、Edge 90+、Firefox 88+、Safari 14+
+- 自动检测浏览器特性并应用兼容性修复
+- CSS backdrop-filter 降级处理
+- 全屏 API 跨浏览器封装
+- 语音合成 API 安全封装
+
+#### 动效管理器
+统一管理应用动效性能
+- 支持开启/关闭动效
+- 三档速度调节（慢速/正常/快速）
+- 自动响应系统「减少动效」偏好
+- GPU 加速优化，will-change 管理
+
+#### 响应式设计
+多尺寸屏幕完美适配
+- 移动端 (<768px)
+- 平板 (768px-991px)
+- 笔记本 (992px-1919px)
+- 台式机 (1920px-2559px)
+- 大屏台式机 (2560px+)
+- 响应式字体和间距自动计算
+
 #### 动态渐变背景主题
 基于日期自动切换主题色彩，每日不同视觉体验
 - 三大主题：晨曦、深海、森林
@@ -43,6 +90,7 @@
 - 背面详细内容：释义、例句、词组、考研考点
 - 可折叠区域，按需展开
 - 掌握度指示器，学习进度一目了然
+- 全屏按钮，一键进入专注模式
 
 #### 智能导航栏
 - 登录前：透明渐变，滚动时背景变化
@@ -64,32 +112,44 @@
 ```
 ZogginWeb/
 ├── src/
-│   ├── components/          # 公共组件
-│   │   ├── NavBar.vue       # 导航栏（动态渐变背景）
-│   │   ├── StudyBackground.vue  # 学习页面动态背景
-│   │   ├── WordCard.vue     # 单词卡片（液态玻璃设计）
-│   │   ├── VideoPlayer.vue  # 视频播放器
-│   │   └── LogoutConfirm.vue # 退出确认弹窗
-│   ├── views/               # 页面视图
-│   │   ├── LandingPage.vue  # 落地页
-│   │   ├── Home.vue         # 首页/我的计划
-│   │   ├── Study.vue        # 学习页面
-│   │   ├── VocabBook.vue    # 单词本
-│   │   ├── Speaking.vue     # 口语练习
-│   │   ├── Stats.vue        # 学习统计
-│   │   ├── Settings.vue     # 设置
-│   │   └── MyPlan.vue       # 我的计划
-│   ├── stores/              # Pinia 状态管理
-│   │   ├── vocabStore.js    # 词汇数据
-│   │   ├── studyStore.js    # 学习记录
-│   │   └── userStore.js     # 用户状态
-│   ├── utils/               # 工具函数
-│   │   ├── colorEngine.js   # 主题色彩引擎
-│   │   ├── srs.js           # SM-2 间隔重复算法
-│   │   ├── pronunciation.js # 发音工具
-│   │   └── storage.js       # IndexedDB 存储
-│   ├── router/              # 路由配置
-│   └── main.js              # 入口文件
+│   ├── api/                    # API 服务层
+│   │   ├── controllers/        # 控制器
+│   │   ├── services/           # 服务层
+│   │   ├── httpClient.js       # HTTP 客户端
+│   │   └── performanceMonitor.js # 性能监控
+│   ├── components/             # 公共组件
+│   │   ├── NavBar.vue          # 导航栏（动态渐变背景）
+│   │   ├── StudyBackground.vue # 学习页面动态背景
+│   │   ├── WordCard.vue        # 单词卡片（液态玻璃设计）
+│   │   ├── CornerStats.vue     # 角落统计面板
+│   │   ├── TodayStats.vue      # 今日统计组件
+│   │   ├── VideoPlayer.vue     # 视频播放器
+│   │   └── LogoutConfirm.vue   # 退出确认弹窗
+│   ├── views/                  # 页面视图
+│   │   ├── LandingPage.vue     # 落地页
+│   │   ├── Home.vue            # 首页/我的计划
+│   │   ├── Study.vue           # 学习页面（全屏模式）
+│   │   ├── VocabBook.vue       # 单词本
+│   │   ├── Speaking.vue        # 口语练习
+│   │   ├── Stats.vue           # 学习统计
+│   │   ├── Settings.vue        # 设置
+│   │   └── MyPlan.vue          # 我的计划
+│   ├── stores/                 # Pinia 状态管理
+│   │   ├── vocabStore.js       # 词汇数据
+│   │   ├── studyStore.js       # 学习记录
+│   │   └── userStore.js        # 用户状态
+│   ├── utils/                  # 工具函数
+│   │   ├── colorEngine.js      # 主题色彩引擎
+│   │   ├── srs.js              # SM-2 间隔重复算法
+│   │   ├── pronunciation.js    # 发音工具
+│   │   ├── storage.js          # IndexedDB 存储
+│   │   ├── focusMode.js        # 专注模式管理
+│   │   ├── shortcutManager.js  # 快捷键管理器
+│   │   ├── browserCompatibility.js # 浏览器兼容性
+│   │   ├── animationManager.js # 动效管理器
+│   │   └── responsive.js       # 响应式设计工具
+│   ├── router/                 # 路由配置
+│   └── main.js                 # 入口文件
 ├── package.json
 ├── vite.config.js
 └── tailwind.config.js
@@ -120,6 +180,28 @@ npm run build
 ```bash
 npm run test
 ```
+
+## 快捷键一览
+
+| 快捷键 | 功能 |
+|--------|------|
+| `Space` | 翻转卡片 |
+| `1` | 标记忘记 |
+| `2` | 标记模糊 |
+| `3` | 标记认识 |
+| `F` | 全屏切换 |
+| `Esc` | 退出/返回 |
+| `Ctrl+B` | 切换导航栏 |
+| `Ctrl+Shift+Q` | 退出确认 |
+
+## 浏览器支持
+
+| 浏览器 | 最低版本 |
+|--------|----------|
+| Chrome | 90+ |
+| Edge | 90+ |
+| Firefox | 88+ |
+| Safari | 14+ |
 
 ## 设计理念
 

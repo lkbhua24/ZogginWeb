@@ -1,5 +1,17 @@
 <template>
-  <nav v-if="!userStore.isLoggedIn" class="navbar landing" :class="{ scrolled: isScrolled }">
+  <!-- 顶部触发条 -->
+  <div
+    v-if="userStore.isLoggedIn && navHidden"
+    class="nav-trigger-bar"
+    @mouseenter="onTriggerEnter"
+    @mouseleave="onTriggerLeave"
+  ></div>
+
+  <nav
+    v-if="!userStore.isLoggedIn"
+    class="navbar landing"
+    :class="{ scrolled: isScrolled }"
+  >
     <div class="navbar-inner">
       <div class="navbar-logo" @click="scrollToTop">
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -30,7 +42,18 @@
     </div>
   </nav>
 
-  <header v-else class="navbar app" :style="gradientStyle">
+  <header
+    v-else
+    class="navbar app"
+    :class="{
+      'nav-hidden': navHidden,
+      'nav-visible': !navHidden,
+      'nav-hover': isHovering
+    }"
+    :style="[gradientStyle, navOpacityStyle]"
+    @mouseenter="onNavEnter"
+    @mouseleave="onNavLeave"
+  >
     <div class="navbar-inner">
       <a class="navbar-logo text-logo" @click.prevent="handleLogoClick">ZogginWeb</a>
 
@@ -66,10 +89,59 @@
             <router-link to="/settings" class="dropdown-item" @click="userMenuOpen = false">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="12" r="3"></circle>
-                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06-.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l-.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l-.06-.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
               </svg>
               设置
             </router-link>
+
+            <!-- 主题模式切换 -->
+            <div class="dropdown-divider"></div>
+            <div class="dropdown-section-title">显示模式</div>
+            <div class="theme-switcher">
+              <button
+                class="theme-option"
+                :class="{ active: currentTheme === 'light' }"
+                @click="setTheme('light')"
+                title="浅色模式"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="5"></circle>
+                  <line x1="12" y1="1" x2="12" y2="3"></line>
+                  <line x1="12" y1="21" x2="12" y2="23"></line>
+                  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                  <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                  <line x1="1" y1="12" x2="3" y2="12"></line>
+                  <line x1="21" y1="12" x2="23" y2="12"></line>
+                  <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                  <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                </svg>
+                <span>浅色</span>
+              </button>
+              <button
+                class="theme-option"
+                :class="{ active: currentTheme === 'dark' }"
+                @click="setTheme('dark')"
+                title="深色模式"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+                <span>深色</span>
+              </button>
+              <button
+                class="theme-option"
+                :class="{ active: currentTheme === 'eye-care' }"
+                @click="setTheme('eye-care')"
+                title="护眼模式"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+                <span>护眼</span>
+              </button>
+            </div>
+
             <div class="dropdown-divider"></div>
             <button class="dropdown-item danger" @click="userMenuOpen = false; showLogoutConfirm = true">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -197,8 +269,10 @@
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '../stores/userStore'
-import { generateTodayPalette, generateGradient } from '../utils/colorEngine.js'
+import { generateTodayPalette, generateGradient, generateMorandiPalette } from '../utils/colorEngine.js'
 import LogoutConfirm from './LogoutConfirm.vue'
+import { FullscreenAPI, normalizeKeyboardEvent, isMac } from '../utils/browserCompatibility.js'
+import { createShortcutManager, DEFAULT_SHORTCUTS } from '../utils/shortcutManager.js'
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -210,11 +284,74 @@ const userMenuOpen = ref(false)
 const showLogoutConfirm = ref(false)
 const userMenuRef = ref(null)
 
-// 动态渐变背景
+// 导航栏自动隐藏/显示状态
+const navHidden = ref(false)
+const isHovering = ref(false)
+let hideNavTimer = null
+let showNavTimer = null
+let mouseY = 0
+let lastMouseY = 0
+let mouseMoveTimer = null
+
+// 导航栏个性化设置
+const navDisplayMode = computed(() => userStore.config?.navDisplayMode || 'auto')
+const navHoverDelay = computed(() => userStore.config?.navHoverDelay || 3000)
+const navOpacity = computed(() => userStore.config?.navOpacity || 85)
+const shortcuts = computed(() => userStore.config?.shortcuts || DEFAULT_SHORTCUTS)
+
+let shortcutManager = createShortcutManager(shortcuts.value)
+
+watch(() => shortcuts.value, (newShortcuts) => {
+  shortcutManager = createShortcutManager(newShortcuts)
+}, { deep: true })
+
+// 导航栏透明度样式
+const navOpacityStyle = computed(() => {
+  const opacity = navOpacity.value / 100
+  return {
+    '--nav-opacity': opacity,
+    '--nav-opacity-hover': Math.min(opacity + 0.1, 1)
+  }
+})
+
+// 当前主题
+const currentTheme = computed(() => userStore.config?.theme || 'light')
+
+// 动态渐变背景 - 根据主题调整
 const palette = ref(generateTodayPalette())
-const gradientStyle = computed(() => ({
-  background: generateGradient(palette.value)
-}))
+const gradientStyle = computed(() => {
+  // 护眼模式使用莫兰迪色系
+  if (currentTheme.value === 'eye-care') {
+    return {
+      background: generateGradient(generateMorandiPalette())
+    }
+  }
+  return {
+    background: generateGradient(palette.value)
+  }
+})
+
+// 切换主题
+async function setTheme(theme) {
+  await userStore.updateConfig({ theme })
+  applyTheme(theme)
+}
+
+// 应用主题到文档
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme)
+
+  // 更新 body 类名
+  document.body.classList.remove('theme-light', 'theme-dark', 'theme-eye-care')
+  document.body.classList.add(`theme-${theme}`)
+
+  // 护眼模式特殊处理
+  if (theme === 'eye-care') {
+    document.documentElement.style.filter = 'sepia(15%) contrast(95%)'
+  } else {
+    document.documentElement.style.filter = ''
+  }
+}
 
 const userInitial = computed(() => {
   return (userStore.userName || '学').charAt(0).toUpperCase()
@@ -276,22 +413,136 @@ function handleClickOutside(e) {
 }
 
 function handleKeydown(e) {
-  if (e.ctrlKey && e.shiftKey && e.key === 'Q') {
+  const keyEvent = normalizeKeyboardEvent(e)
+  const currentPath = router.currentRoute.value.path
+
+  if (shortcutManager.matches('navToggle', e)) {
     e.preventDefault()
-    if (userStore.isLoggedIn && !showLogoutConfirm.value) {
-      showLogoutConfirm.value = true
-    }
+    toggleNav()
     return
   }
+
   if (e.key === 'Escape') {
+    if (FullscreenAPI.isFullscreen) {
+      e.preventDefault()
+      FullscreenAPI.exit()
+      return
+    }
+
+    if (currentPath === '/study') {
+      if (showLogoutConfirm.value) {
+        e.preventDefault()
+        showLogoutConfirm.value = false
+        return
+      } else if (drawerOpen.value) {
+        e.preventDefault()
+        closeDrawer()
+        return
+      } else if (userMenuOpen.value) {
+        e.preventDefault()
+        userMenuOpen.value = false
+        return
+      }
+      return
+    }
+
     if (showLogoutConfirm.value) {
       showLogoutConfirm.value = false
     } else if (drawerOpen.value) {
       closeDrawer()
     } else if (userMenuOpen.value) {
       userMenuOpen.value = false
+    } else if (!navHidden.value && userStore.isLoggedIn) {
+      hideNav()
     }
+    return
   }
+
+  if (shortcutManager.matches('navLogoutConfirm', e)) {
+    e.preventDefault()
+    if (userStore.isLoggedIn && !showLogoutConfirm.value) {
+      showLogoutConfirm.value = true
+    }
+    return
+  }
+}
+
+// 切换导航栏显示/隐藏
+function toggleNav() {
+  if (navHidden.value) {
+    showNav()
+  } else {
+    hideNav()
+  }
+}
+
+// 显示导航栏
+function showNav() {
+  clearTimeout(hideNavTimer)
+  navHidden.value = false
+  isHovering.value = true
+}
+
+// 隐藏导航栏
+function hideNav() {
+  clearTimeout(showNavTimer)
+  // 固定模式下不自动隐藏
+  if (navDisplayMode.value === 'fixed') {
+    return
+  }
+  navHidden.value = true
+  isHovering.value = false
+}
+
+// 鼠标进入触发条
+function onTriggerEnter() {
+  clearTimeout(hideNavTimer)
+  showNavTimer = setTimeout(() => {
+    showNav()
+  }, 50)
+}
+
+// 鼠标离开触发条
+function onTriggerLeave() {
+  clearTimeout(showNavTimer)
+}
+
+// 鼠标进入导航栏
+function onNavEnter() {
+  clearTimeout(hideNavTimer)
+  isHovering.value = true
+}
+
+// 鼠标离开导航栏
+function onNavLeave() {
+  isHovering.value = false
+  // 固定模式下不自动隐藏
+  if (navDisplayMode.value === 'fixed') {
+    return
+  }
+  // 使用用户设置的延迟时间
+  hideNavTimer = setTimeout(() => {
+    if (!isHovering.value) {
+      hideNav()
+    }
+  }, navHoverDelay.value)
+}
+
+// 监听鼠标移动，检测Y轴坐标
+function handleMouseMove(e) {
+  mouseY = e.clientY
+
+  // 清除之前的定时器
+  clearTimeout(mouseMoveTimer)
+
+  // 使用防抖，避免频繁触发
+  mouseMoveTimer = setTimeout(() => {
+    // 如果鼠标向上移动（靠近顶部），且导航栏已隐藏，显示它
+    if (mouseY < lastMouseY && mouseY < 100 && navHidden.value && userStore.isLoggedIn) {
+      showNav()
+    }
+    lastMouseY = mouseY
+  }, 100)
 }
 
 watch(() => router.currentRoute.value.path, () => {
@@ -302,13 +553,30 @@ onMounted(() => {
   window.addEventListener('scroll', handleNavScroll, { passive: true })
   document.addEventListener('click', handleClickOutside)
   document.addEventListener('keydown', handleKeydown)
+  document.addEventListener('mousemove', handleMouseMove, { passive: true })
+
+  // 初始化主题
+  applyTheme(currentTheme.value)
+
+  // 初始延迟后自动隐藏导航栏（登录状态下，且非固定模式）
+  if (userStore.isLoggedIn && navDisplayMode.value !== 'fixed') {
+    hideNavTimer = setTimeout(() => {
+      hideNav()
+    }, 1000)
+  }
 })
 
 onUnmounted(() => {
   window.removeEventListener('scroll', handleNavScroll)
   document.removeEventListener('click', handleClickOutside)
   document.removeEventListener('keydown', handleKeydown)
+  document.removeEventListener('mousemove', handleMouseMove)
   document.body.style.overflow = ''
+
+  // 清理定时器
+  clearTimeout(hideNavTimer)
+  clearTimeout(showNavTimer)
+  clearTimeout(mouseMoveTimer)
 })
 </script>
 
@@ -316,6 +584,86 @@ onUnmounted(() => {
 .navbar {
   width: 100%;
   z-index: 100;
+}
+
+/* 顶部触发条 */
+.nav-trigger-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.3);
+  z-index: 99;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.nav-trigger-bar:hover {
+  background: rgba(255, 255, 255, 0.6);
+}
+
+/* 导航栏隐藏/显示动画 - 线性渐变 + 上下浮动 */
+.navbar.app {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  transition: opacity var(--anim-duration-fast, 150ms) linear, 
+              transform var(--anim-duration-fast, 150ms) linear;
+  will-change: opacity, transform;
+}
+
+.navbar.app.nav-hidden {
+  opacity: 0;
+  transform: translate3d(0, -20px, 0);
+  pointer-events: none;
+}
+
+.navbar.app.nav-visible {
+  opacity: var(--nav-opacity, 0.85);
+  transform: translate3d(0, 0, 0);
+  pointer-events: auto;
+}
+
+.navbar.app.nav-hover {
+  opacity: var(--nav-opacity-hover, 0.95);
+  /* backdrop-filter 添加多浏览器前缀支持 */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Safari 对 backdrop-filter 的额外支持 */
+@supports (-webkit-backdrop-filter: blur(12px)) {
+  .navbar.app.nav-hover {
+    -webkit-backdrop-filter: blur(12px);
+  }
+}
+
+/* Firefox 早期版本回退 */
+@supports not ((backdrop-filter: blur(12px)) or (-webkit-backdrop-filter: blur(12px))) {
+  .navbar.app.nav-hover {
+    background: rgba(255, 255, 255, 0.98) !important;
+  }
+}
+
+/* 减少动效偏好支持 */
+@media (prefers-reduced-motion: reduce) {
+  .navbar.app {
+    transition: none;
+  }
+  .navbar.app.nav-visible {
+    transform: none;
+  }
+  .navbar.app.nav-hidden {
+    transform: none;
+  }
+}
+
+/* 浅色模式导航栏悬停 */
+[data-theme="light"] .navbar.app.nav-hover,
+.navbar.app.nav-hover {
+  background: rgba(240, 240, 240, 0.85) !important;
 }
 
 .navbar.landing {
@@ -338,12 +686,12 @@ onUnmounted(() => {
 }
 
 .navbar-inner {
-  max-width: 1100px;
+  max-width: var(--container-max-width);
   margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem 2rem;
+  padding: 1rem var(--container-padding);
   gap: 1rem;
 }
 
@@ -412,13 +760,14 @@ onUnmounted(() => {
   background: rgba(24, 29, 39, 0.1);
   color: #181D27;
   border: none;
-  padding: 0.5rem 1.5rem;
+  padding: 0.5rem 1.25rem;
   border-radius: 6px;
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: clamp(0.8rem, 1.2vw, 0.9rem);
   transition: all 0.3s ease;
   text-decoration: none;
   display: inline-block;
+  white-space: nowrap;
 }
 
 .nav-link:hover {
@@ -806,9 +1155,182 @@ onUnmounted(() => {
   transform: scaleY(0.9) translateY(-4px);
 }
 
-@media (max-width: 768px) {
+/* ===== 主题切换器样式 ===== */
+.dropdown-section-title {
+  padding: 0.5rem 0.85rem;
+  font-size: 0.75rem;
+  color: #999;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.theme-switcher {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.25rem 0.85rem 0.75rem;
+}
+
+.theme-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #666;
+  font-size: 0.75rem;
+}
+
+.theme-option:hover {
+  background: #f5f5f5;
+  color: #333;
+}
+
+.theme-option.active {
+  background: #eef2ff;
+  border-color: #667eea;
+  color: #667eea;
+}
+
+.theme-option svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* 深色主题适配 */
+[data-theme="dark"] .theme-option:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .theme-option.active {
+  background: rgba(102, 126, 234, 0.2);
+  border-color: #667eea;
+}
+
+/* ===== 响应式适配 ===== */
+
+/* 超大屏 (2560px+) */
+@media (min-width: 2560px) {
+  .navbar-inner {
+    max-width: 1600px;
+    padding: 1.25rem 3rem;
+  }
+  
+  .navbar-logo {
+    font-size: 1.5rem;
+  }
+  
+  .navbar-logo.text-logo {
+    font-size: 1.75rem;
+  }
+  
+  .nav-link {
+    padding: 0.6rem 1.75rem;
+    font-size: 1rem;
+  }
+  
+  .user-name {
+    max-width: 120px;
+    font-size: 1rem;
+  }
+}
+
+/* 大屏台式机 (1920px - 2559px) */
+@media (max-width: 2559px) and (min-width: 1920px) {
+  .navbar-inner {
+    max-width: 1400px;
+    padding: 1.1rem 2.5rem;
+  }
+  
+  .navbar-logo {
+    font-size: 1.35rem;
+  }
+  
+  .navbar-logo.text-logo {
+    font-size: 1.6rem;
+  }
+  
+  .nav-link {
+    padding: 0.55rem 1.5rem;
+  }
+}
+
+/* 大笔记本 (1440px - 1919px) */
+@media (max-width: 1919px) and (min-width: 1440px) {
+  .navbar-inner {
+    padding: 1rem 2rem;
+  }
+}
+
+/* 小笔记本 (1366px - 1439px) */
+@media (max-width: 1439px) and (min-width: 1366px) {
+  .navbar-inner {
+    padding: 0.9rem 1.5rem;
+  }
+  
+  .nav-link {
+    padding: 0.45rem 1.1rem;
+    font-size: 0.85rem;
+  }
+  
+  .user-meta {
+    display: none;
+  }
+}
+
+/* 平板横屏/小笔记本 (992px - 1365px) */
+@media (max-width: 1365px) and (min-width: 992px) {
+  .navbar-inner {
+    padding: 0.85rem 1.25rem;
+    gap: 0.75rem;
+  }
+  
+  .navbar-logo {
+    font-size: 1.1rem;
+  }
+  
+  .navbar-logo.text-logo {
+    font-size: 1.3rem;
+  }
+  
+  .nav-link {
+    padding: 0.4rem 0.9rem;
+    font-size: 0.8rem;
+  }
+  
+  .app-links {
+    gap: 0.35rem;
+  }
+  
+  .user-meta {
+    display: none;
+  }
+}
+
+/* 平板竖屏 (768px - 991px) */
+@media (max-width: 991px) and (min-width: 768px) {
   .navbar-inner {
     padding: 0.8rem 1rem;
+  }
+  
+  .app-links {
+    display: none;
+  }
+  
+  .hamburger-btn {
+    display: block;
+  }
+}
+
+/* 移动端 (< 768px) */
+@media (max-width: 767px) {
+  .navbar-inner {
+    padding: 0.75rem 1rem;
   }
 
   .landing-links,

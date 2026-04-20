@@ -1,3 +1,232 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ===== 响应式 CSS 变量 ===== */
+:root {
+  /* 基础尺寸 */
+  --container-max-width: 1100px;
+  --container-padding: 2rem;
+  
+  /* 字体大小基准 */
+  --font-size-base: 16px;
+  --font-size-word: 4rem;
+  --font-size-phonetic: 1.375rem;
+  --font-size-example: 1rem;
+  
+  /* 间距 */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 3rem;
+  
+  /* 卡片尺寸 */
+  --card-width: min(720px, 94%);
+  --card-padding: 2rem;
+  --card-gap: 16px;
+  
+  /* 导航栏 */
+  --navbar-height: 64px;
+  
+  /* 动效时长 */
+  --anim-duration-fast: 150ms;
+  --anim-duration-normal: 300ms;
+  --anim-duration-slow: 450ms;
+  
+  /* 缓动函数 */
+  --anim-easing-smooth: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --anim-easing-standard: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ===== 小笔记本 (1366px - 1439px) ===== */
+@media (max-width: 1439px) and (min-width: 1366px) {
+  :root {
+    --container-max-width: 1000px;
+    --container-padding: 1.5rem;
+    --font-size-base: 15px;
+    --font-size-word: 3.5rem;
+    --font-size-phonetic: 1.25rem;
+    --card-width: min(680px, 94%);
+    --spacing-xl: 1.75rem;
+  }
+}
+
+/* ===== 平板 (992px - 1365px) ===== */
+@media (max-width: 1365px) and (min-width: 992px) {
+  :root {
+    --container-max-width: 900px;
+    --container-padding: 1.25rem;
+    --font-size-base: 14px;
+    --font-size-word: 3rem;
+    --font-size-phonetic: 1.125rem;
+    --card-width: min(640px, 94%);
+    --spacing-xl: 1.5rem;
+    --navbar-height: 60px;
+  }
+}
+
+/* ===== 大屏台式机 (1920px+) ===== */
+@media (min-width: 1920px) {
+  :root {
+    --container-max-width: 1400px;
+    --container-padding: 2.5rem;
+    --font-size-base: 17px;
+    --font-size-word: 4.5rem;
+    --font-size-phonetic: 1.5rem;
+    --card-width: min(780px, 85%);
+    --spacing-xl: 2.5rem;
+    --spacing-2xl: 4rem;
+  }
+}
+
+/* ===== 超大屏 (2560px+) ===== */
+@media (min-width: 2560px) {
+  :root {
+    --container-max-width: 1600px;
+    --container-padding: 3rem;
+    --font-size-base: 18px;
+    --font-size-word: 5rem;
+    --card-width: min(840px, 80%);
+    --spacing-2xl: 5rem;
+  }
+}
+
+/* ===== 浏览器兼容性全局样式 ===== */
+
+/* CSS 变量定义 */
+:root {
+  /* 动效时长变量 */
+  --anim-duration-fast: 150ms;
+  --anim-duration-normal: 300ms;
+  --anim-duration-slow: 450ms;
+  
+  /* 缓动函数 */
+  --anim-easing-smooth: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --anim-easing-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --anim-easing-decelerate: cubic-bezier(0, 0, 0.2, 1);
+}
+
+/* ===== backdrop-filter 多浏览器支持 ===== */
+@supports not ((backdrop-filter: blur(10px)) or (-webkit-backdrop-filter: blur(10px))) {
+  /* 对于不支持 backdrop-filter 的浏览器，使用纯色背景 */
+  .backdrop-blur-md,
+  .backdrop-blur-lg,
+  .backdrop-blur-xl {
+    background-color: rgba(255, 255, 255, 0.95) !important;
+  }
+}
+
+/* ===== 减少动效偏好支持 ===== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ===== 浏览器特定修复 ===== */
+
+/* Safari 对 sticky 定位的修复 */
+@supports (-webkit-touch-callout: none) {
+  .sticky {
+    position: -webkit-sticky;
+  }
+}
+
+/* Firefox 对滚动条的样式 */
+@-moz-document url-prefix() {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
+  }
+}
+
+/* Chrome/Edge/Safari 滚动条样式 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.5);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(156, 163, 175, 0.7);
+}
+
+/* iOS Safari 100vh 修复 */
+@supports (-webkit-touch-callout: none) {
+  .h-screen {
+    height: -webkit-fill-available;
+  }
+  
+  .min-h-screen {
+    min-height: -webkit-fill-available;
+  }
+}
+
+/* ===== GPU 加速优化 ===== */
+.gpu-accelerated {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* Safari 特定的 GPU 加速 */
+@supports (-webkit-touch-callout: none) {
+  .gpu-accelerated {
+    -webkit-transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+  }
+}
+
+/* ===== 内容可见性优化 ===== */
+.content-visibility-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 300px;
+}
+
+/* 对于不支持 content-visibility 的浏览器 */
+@supports not (content-visibility: auto) {
+  .content-visibility-auto {
+    /* 降级方案 */
+  }
+}
+
+/* ===== 触摸设备优化 ===== */
+@media (hover: none) and (pointer: coarse) {
+  /* 触摸设备上禁用 hover 效果 */
+  .hover\:scale-105:hover {
+    transform: none;
+  }
+  
+  /* 增大触摸目标 */
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* ===== 打印样式 ===== */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}

@@ -7,7 +7,7 @@ const STUDY_PLAN_KEY = 'zoggin_study_plan';
 const LOGIN_STATE_KEY = 'zoggin_is_logged_in';
 
 const DEFAULT_CONFIG = {
-  theme: 'light',
+  theme: 'light', // light, dark, eye-care
   language: 'zh-CN',
   dailyGoal: 10,
   dailyNewWords: 30,
@@ -19,7 +19,28 @@ const DEFAULT_CONFIG = {
   notifications: true,
   reminderTime: '09:00',
   browserNotification: false,
-  sound: true
+  sound: true,
+  // 导航设置
+  navDisplayMode: 'auto', // fixed, auto
+  navHoverDelay: 3000, // 唤出延迟（毫秒）
+  navOpacity: 85, // 导航栏透明度（%）
+  // 学习设置
+  cardSize: 'medium', // small, medium, large
+  fontSize: 'medium', // small, medium, large
+  // 动效设置
+  enableAnimations: true, // 是否启用动效
+  animationSpeed: 'normal', // slow, normal, fast
+  // 快捷键设置
+  shortcuts: {
+    navToggle: 'Ctrl+B',
+    navLogoutConfirm: 'Ctrl+Shift+Q',
+    studyFlip: 'Space',
+    studyResponseForget: '1',
+    studyResponseVague: '2',
+    studyResponseKnow: '3',
+    studyFullscreen: 'F',
+    studyExit: 'Escape'
+  }
 };
 
 const DEFAULT_STUDY_PLAN = {

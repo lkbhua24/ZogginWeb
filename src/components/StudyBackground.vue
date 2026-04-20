@@ -22,7 +22,9 @@
 </template>
 
 <script>
-import { generateTodayPalette, generateGradient } from '@/utils/colorEngine.js';
+import { generateTodayPalette, generateGradient, generateMorandiPalette, generateDarkPalette } from '@/utils/colorEngine.js';
+import { useUserStore } from '@/stores/userStore';
+import { computed } from 'vue';
 
 const PATTERN_TYPES = ['fog', 'breath', 'aurora', 'particles', 'ripple', 'texture'];
 
@@ -288,6 +290,11 @@ export default {
       default: true
     }
   },
+  setup() {
+    const userStore = useUserStore();
+    const currentTheme = computed(() => userStore.config?.theme || 'light');
+    return { currentTheme };
+  },
   data() {
     return {
       palette: {
@@ -301,13 +308,21 @@ export default {
       },
       currentPattern: 'particles',
       isPaused: false,
-      refreshTimer: null
+      refreshTimer: null,
+      themeWatcher: null
     };
   },
   computed: {
     gradientStyle() {
+      // 根据当前主题选择合适的调色板
+      let palette = this.palette;
+      if (this.currentTheme === 'eye-care') {
+        palette = generateMorandiPalette();
+      } else if (this.currentTheme === 'dark') {
+        palette = generateDarkPalette();
+      }
       return {
-        background: generateGradient(this.palette)
+        background: generateGradient(palette)
       };
     },
     todayPatternName() {
@@ -317,6 +332,7 @@ export default {
   },
   mounted() {
     this.refresh();
+    this.watchThemeChanges();
 
     const now = new Date();
     const tomorrow = new Date(now);
@@ -334,15 +350,35 @@ export default {
     if (this.refreshTimer) {
       clearTimeout(this.refreshTimer);
     }
+    if (this.themeWatcher) {
+      clearInterval(this.themeWatcher);
+    }
     document.removeEventListener('visibilitychange', this.handleVisibilityChange);
   },
   methods: {
     refresh() {
-      this.palette = generateTodayPalette();
+      // 根据主题选择合适的调色板
+      if (this.currentTheme === 'eye-care') {
+        this.palette = generateMorandiPalette();
+      } else if (this.currentTheme === 'dark') {
+        this.palette = generateDarkPalette();
+      } else {
+        this.palette = generateTodayPalette();
+      }
       this.currentPattern = this.todayPatternName;
     },
     handleVisibilityChange() {
       this.isPaused = document.hidden;
+    },
+    watchThemeChanges() {
+      // 监听主题变化，实时更新背景
+      let lastTheme = this.currentTheme;
+      this.themeWatcher = setInterval(() => {
+        if (this.currentTheme !== lastTheme) {
+          lastTheme = this.currentTheme;
+          this.refresh();
+        }
+      }, 500);
     }
   }
 };
@@ -398,7 +434,10 @@ export default {
   position: relative;
   z-index: 10;
   height: 100vh;
+  width: 100%;
   overflow: auto;
+  display: flex;
+  flex-direction: column;
 }
 
 .fog-pattern {

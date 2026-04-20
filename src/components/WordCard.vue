@@ -1,16 +1,32 @@
 <template>
   <div
     class="word-display"
-    :class="{ 'show-detail': showBack }"
+    :class="[
+      { 'show-detail': showBack, 'fullscreen-mode': isFullscreen },
+      `card-size-${cardSize}`
+    ]"
     @click="$emit('flip')"
   >
+    <!-- 全屏切换按钮 -->
+    <button
+      class="fullscreen-toggle-btn"
+      @click.stop="$emit('toggle-fullscreen')"
+      :title="isFullscreen ? '退出全屏' : '进入全屏'"
+    >
+      <svg v-if="!isFullscreen" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+      </svg>
+      <svg v-else width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/>
+      </svg>
+    </button>
     <!-- 正面：简洁展示 - 仅单词、音标、发音按钮 -->
     <template v-if="!showBack">
       <div class="word-main">
         <div class="word-title">{{ word.word }}</div>
         <div class="word-phonetic-row" v-if="word.phonetic">
           <span class="word-phonetic">{{ word.phonetic }}</span>
-          <button class="word-play-btn" @click.stop="$emit('play-audio', word.word)">
+          <button class="word-play-btn" @click.stop="handlePlayAudio(word.word)">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
               <polygon points="5 3 19 12 5 21 5 3"></polygon>
             </svg>
@@ -26,7 +42,7 @@
         <div class="l1-word">{{ word.word }}</div>
         <div class="l1-phonetic-row" v-if="word.phonetic">
           <span class="l1-phonetic">{{ word.phonetic }}</span>
-          <button class="l1-play-btn" @click.stop="$emit('play-audio', word.word)">
+          <button class="l1-play-btn" @click.stop="handlePlayAudio(word.word)">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
               <polygon points="5 3 19 12 5 21 5 3"></polygon>
             </svg>
@@ -140,6 +156,8 @@
 </template>
 
 <script>
+import { useUserStore } from '../stores/userStore'
+
 export default {
   name: 'WordCard',
   props: {
@@ -150,9 +168,17 @@ export default {
     showBack: {
       type: Boolean,
       default: false
+    },
+    isFullscreen: {
+      type: Boolean,
+      default: false
     }
   },
-  emits: ['flip', 'play-audio'],
+  emits: ['flip', 'play-audio', 'toggle-fullscreen'],
+  setup() {
+    const userStore = useUserStore()
+    return { userStore }
+  },
   data() {
     return {
       expandedSections: {
@@ -162,6 +188,9 @@ export default {
     };
   },
   computed: {
+    cardSize() {
+      return this.userStore.config?.cardSize || 'medium'
+    },
     hasExtensionContent() {
       return (this.word.phrases && this.word.phrases.length) || this.word.examTips;
     },
@@ -241,6 +270,13 @@ export default {
     toggleSection(section) {
       this.expandedSections[section] = !this.expandedSections[section];
     },
+    handlePlayAudio(word) {
+      // 触发震动反馈
+      if (navigator.vibrate) {
+        navigator.vibrate(50);
+      }
+      this.$emit('play-audio', word);
+    },
     formatMeanings(meanings) {
       if (!meanings || !meanings.length) return '';
       return meanings.join(' / ');
@@ -272,154 +308,348 @@ export default {
 </script>
 
 <style scoped>
-/* ===== 主容器 - 无卡片样式 ===== */
+/* ===== 主容器 - 卡片居中放大效果 ===== */
 .word-display {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: min(680px, 92%);
+  flex: 1;
+  width: var(--card-width);
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.4s ease;
+  transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  /* GPU 加速 */
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* ===== 卡片大小变体 ===== */
+.card-size-small .word-title {
+  font-size: clamp(1.75rem, 5vw, 2.5rem);
+}
+
+.card-size-small .l1-word {
+  font-size: clamp(1.25rem, 3.5vw, 1.75rem);
+}
+
+.card-size-small .word-display.show-detail {
+  transform: scale(0.95);
+}
+
+.card-size-large .word-title {
+  font-size: clamp(3rem, 6vw, 5rem);
+}
+
+.card-size-large .word-phonetic {
+  font-size: clamp(1.25rem, 2vw, 1.625rem);
+  padding: 8px 20px;
+}
+
+.card-size-large .l1-word {
+  font-size: clamp(2rem, 4vw, 3.25rem);
+}
+
+.card-size-large .l1-phonetic {
+  font-size: clamp(1.125rem, 1.8vw, 1.375rem);
+  padding: 6px 16px;
+}
+
+.card-size-large .l1-pos-item .meanings-line {
+  font-size: clamp(1rem, 1.8vw, 1.375rem);
+}
+
+.card-size-large .example-en {
+  font-size: clamp(0.9375rem, 1.6vw, 1.25rem);
+}
+
+.card-size-large .example-cn {
+  font-size: clamp(0.8125rem, 1.4vw, 1rem);
+}
+
+.card-size-large .word-display.show-detail {
+  transform: scale(1.05);
+}
+
+/* ===== 全屏切换按钮 - 半透明悬浮 ===== */
+.fullscreen-toggle-btn {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: none;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: rgba(102, 126, 234, 0.7);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 100;
+  opacity: 0.6;
+}
+
+.fullscreen-toggle-btn:hover {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.35);
+  transform: scale(1.1);
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.fullscreen-toggle-btn:active {
+  transform: scale(1.05);
+}
+
+/* 全屏模式下的按钮样式 */
+.word-display.fullscreen-mode .fullscreen-toggle-btn {
+  background: rgba(255, 255, 255, 0.2);
+  opacity: 0.4;
+}
+
+.word-display.fullscreen-mode .fullscreen-toggle-btn:hover {
+  opacity: 0.9;
+  background: rgba(255, 255, 255, 0.4);
 }
 
 .word-display.show-detail {
-  top: 45%;
-  width: min(680px, 92%);
+  width: min(720px, 94%);
   align-items: stretch;
   gap: 16px;
+  transform: scale(1.02);
 }
 
-/* ===== 正面样式 - 仅单词、音标、发音按钮 ===== */
+/* ===== 正面样式 - 单词居中显示，无卡片背景 ===== */
 .word-main {
   text-align: center;
   color: #1a1a1a;
 }
 
 .word-title {
-  font-size: 3.5rem;
-  font-weight: 700;
+  font-size: var(--font-size-word);
+  font-weight: 800;
   color: #1a1a1a;
-  text-shadow: 0 2px 20px rgba(255, 255, 255, 0.3);
-  margin-bottom: 16px;
-  letter-spacing: -0.02em;
+  text-shadow: 0 2px 20px rgba(255, 255, 255, 0.4);
+  margin-bottom: clamp(12px, 2vh, 20px);
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  /* 响应式字体 */
+  font-size: clamp(2rem, 5vw, 4rem);
 }
 
 .word-phonetic-row {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 14px;
 }
 
 .word-phonetic {
-  font-size: 1.125rem;
-  color: #666666;
+  font-size: clamp(1rem, 1.8vw, 1.375rem);
+  color: #4a5568;
   font-style: normal;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  background: rgba(102, 126, 234, 0.1);
+  padding: clamp(4px, 1vh, 6px) clamp(10px, 1.5vw, 16px);
+  border-radius: 20px;
 }
 
+/* ===== 发音按钮 - 圆形悬浮放大动效 ===== */
 .word-play-btn {
-  width: 28px;
-  height: 28px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
-  background: #667eea;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   border: none;
   color: white;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   flex-shrink: 0;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+.word-play-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 .word-play-btn:hover {
-  transform: scale(1.1);
-  background: #5a67d8;
+  transform: scale(1.2);
+  box-shadow: 0 6px 25px rgba(102, 126, 234, 0.6);
 }
 
-/* ===== 背面样式 - 无容器，直接置于背景 ===== */
+.word-play-btn:hover::before {
+  opacity: 1;
+}
+
+.word-play-btn:active {
+  transform: scale(1.1);
+}
+
+.word-play-btn svg {
+  width: 20px;
+  height: 20px;
+  transition: transform 0.2s ease;
+}
+
+.word-play-btn:hover svg {
+  transform: scale(1.1);
+}
+
+/* ===== 背面样式 - 无卡片背景 ===== */
 .l1-header {
   text-align: center;
-  padding: 8px 0;
+  padding: 16px 0;
   color: #1a1a1a;
+  animation: headerFadeIn 0.5s ease forwards;
+}
+
+@keyframes headerFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .l1-word {
-  font-size: 2rem;
-  font-weight: 700;
+  font-size: 2.5rem;
+  font-weight: 800;
   color: #1a1a1a;
-  text-shadow: 0 2px 10px rgba(255, 255, 255, 0.2);
-  margin-bottom: 6px;
+  text-shadow: 0 2px 12px rgba(255, 255, 255, 0.3);
+  margin-bottom: 10px;
+  letter-spacing: -0.02em;
 }
 
 .l1-phonetic-row {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  margin-bottom: 8px;
+  gap: 10px;
+  margin-bottom: 4px;
 }
 
 .l1-phonetic {
-  font-size: 1rem;
-  color: #666666;
+  font-size: 1.125rem;
+  color: #4a5568;
   font-style: normal;
+  font-weight: 500;
+  background: rgba(102, 126, 234, 0.1);
+  padding: 4px 12px;
+  border-radius: 16px;
 }
 
 .l1-play-btn {
-  width: 24px;
-  height: 24px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
-  background: #667eea;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   border: none;
   color: white;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   flex-shrink: 0;
+  box-shadow: 0 3px 12px rgba(102, 126, 234, 0.35);
 }
 
 .l1-play-btn:hover {
-  transform: scale(1.1);
-  background: #5a67d8;
+  transform: scale(1.15);
+  box-shadow: 0 5px 20px rgba(102, 126, 234, 0.5);
 }
 
-/* 多词性垂直排列 */
+.l1-play-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* ===== 释义显示 - 平滑淡入及下滑动画 ===== */
 .l1-pos-list {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
-  margin-top: 4px;
+  gap: 10px;
+  margin-top: 16px;
+  animation: meaningSlideDown 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes meaningSlideDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-15px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .l1-pos-item {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 12px;
   flex-wrap: wrap;
+  opacity: 0;
+  animation: meaningItemFadeIn 0.4s ease forwards;
+}
+
+.l1-pos-item:nth-child(1) { animation-delay: 0.1s; }
+.l1-pos-item:nth-child(2) { animation-delay: 0.2s; }
+.l1-pos-item:nth-child(3) { animation-delay: 0.3s; }
+.l1-pos-item:nth-child(4) { animation-delay: 0.4s; }
+
+@keyframes meaningItemFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 .l1-pos-item .pos-tag {
-  background: rgba(102, 126, 234, 0.15);
-  color: #667eea;
-  padding: 3px 12px;
-  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+  color: #5a67d8;
+  padding: 5px 14px;
+  border-radius: 20px;
   font-size: 0.875rem;
-  font-weight: 500;
+  font-weight: 600;
+  border: 1px solid rgba(102, 126, 234, 0.2);
+  transition: all 0.3s ease;
+}
+
+.l1-pos-item:hover .pos-tag {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.3) 0%, rgba(118, 75, 162, 0.3) 100%);
+  transform: scale(1.05);
 }
 
 .l1-pos-item .meanings-line {
-  font-size: 1rem;
-  color: #333333;
+  font-size: 1.125rem;
+  color: #2d3748;
+  font-weight: 500;
+  line-height: 1.5;
 }
 
 /* ===== 液态玻璃卡片通用样式 ===== */
@@ -594,46 +824,197 @@ export default {
   box-shadow: 0 0 8px rgba(102, 126, 234, 0.4);
 }
 
-/* ===== 响应式 ===== */
-@media (max-width: 768px) {
+/* ===== 响应式适配 ===== */
+
+/* 超大屏 (2560px+) */
+@media (min-width: 2560px) {
+  .word-display {
+    width: min(840px, 80%);
+  }
+  
+  .word-title {
+    font-size: 5rem;
+  }
+  
+  .l1-word {
+    font-size: 3.5rem;
+  }
+  
+  .word-phonetic {
+    font-size: 1.625rem;
+  }
+  
+  .example-en {
+    font-size: 1.25rem;
+  }
+  
+  .example-cn {
+    font-size: 1.125rem;
+  }
+}
+
+/* 大屏台式机 (1920px - 2559px) */
+@media (max-width: 2559px) and (min-width: 1920px) {
+  .word-display {
+    width: min(780px, 85%);
+  }
+  
+  .word-title {
+    font-size: 4.5rem;
+  }
+  
+  .l1-word {
+    font-size: 2.75rem;
+  }
+}
+
+/* 大笔记本 (1440px - 1919px) */
+@media (max-width: 1919px) and (min-width: 1440px) {
+  .word-display {
+    width: min(720px, 90%);
+  }
+  
+  .word-title {
+    font-size: 4rem;
+  }
+  
+  .l1-word {
+    font-size: 2.5rem;
+  }
+}
+
+/* 小笔记本 (1366px - 1439px) */
+@media (max-width: 1439px) and (min-width: 1366px) {
+  .word-display {
+    width: min(680px, 94%);
+  }
+  
+  .word-title {
+    font-size: 3.5rem;
+  }
+  
+  .l1-word {
+    font-size: 2.25rem;
+  }
+  
+  .word-phonetic {
+    font-size: 1.25rem;
+  }
+}
+
+/* 平板横屏/小笔记本 (992px - 1365px) */
+@media (max-width: 1365px) and (min-width: 992px) {
+  .word-display {
+    width: min(640px, 94%);
+  }
+  
+  .word-title {
+    font-size: 3rem;
+  }
+  
+  .l1-word {
+    font-size: 2rem;
+  }
+  
+  .word-phonetic {
+    font-size: 1.125rem;
+  }
+  
+  .l2-core,
+  .glass-card {
+    padding: 18px 22px;
+  }
+}
+
+/* 平板竖屏 (768px - 991px) */
+@media (max-width: 991px) and (min-width: 768px) {
   .word-display {
     width: 92%;
   }
+  
+  .word-title {
+    font-size: 2.75rem;
+  }
+  
+  .l1-word {
+    font-size: 1.875rem;
+  }
+}
+
+/* 移动端 (< 768px) */
+@media (max-width: 767px) {
+  .word-display {
+    width: 94%;
+  }
 
   .word-display.show-detail {
-    width: 92%;
-    top: 42%;
+    width: 94%;
+  }
+
+  .word-main {
+    padding: 24px 20px;
   }
 
   .word-title {
-    font-size: 2.5rem;
+    font-size: clamp(1.75rem, 8vw, 2.75rem);
+    margin-bottom: 12px;
   }
 
   .word-phonetic {
-    font-size: 1rem;
+    font-size: clamp(0.9375rem, 4vw, 1.125rem);
+    padding: 4px 10px;
   }
 
   .word-play-btn {
-    width: 24px;
-    height: 24px;
+    width: 40px;
+    height: 40px;
+  }
+
+  .word-play-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .l1-header {
+    padding: 16px 20px;
   }
 
   .l1-word {
-    font-size: 1.75rem;
+    font-size: clamp(1.5rem, 6vw, 2rem);
+  }
+
+  .l1-phonetic {
+    font-size: 0.9375rem;
+  }
+
+  .l1-play-btn {
+    width: 28px;
+    height: 28px;
+  }
+
+  .l1-pos-item .meanings-line {
+    font-size: 0.9375rem;
   }
 
   .l2-core,
   .glass-card {
-    padding: 16px 20px;
-    border-radius: 16px;
+    padding: 14px 18px;
+    border-radius: 14px;
   }
 
   .example-en {
-    font-size: 0.9375rem;
+    font-size: 0.875rem;
   }
 
   .example-cn {
     font-size: 0.8125rem;
+  }
+  
+  .fullscreen-toggle-btn {
+    top: 70px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
   }
 }
 

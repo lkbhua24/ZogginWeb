@@ -28,6 +28,123 @@
       <section class="settings-section">
         <h2 class="section-title">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="4" y1="6" x2="20" y2="6"></line>
+            <line x1="4" y1="12" x2="20" y2="12"></line>
+            <line x1="4" y1="18" x2="20" y2="18"></line>
+          </svg>
+          导航设置
+        </h2>
+        <div class="settings-card">
+          <div class="setting-item">
+            <div class="setting-info">
+              <span class="setting-label">显示模式</span>
+              <span class="setting-desc">选择导航栏的显示方式</span>
+            </div>
+            <div class="setting-control">
+              <div class="mode-selector">
+                <button
+                  class="mode-btn"
+                  :class="{ active: config.navDisplayMode === 'fixed' }"
+                  @click="updateConfig('navDisplayMode', 'fixed')"
+                >固定</button>
+                <button
+                  class="mode-btn"
+                  :class="{ active: config.navDisplayMode === 'auto' }"
+                  @click="updateConfig('navDisplayMode', 'auto')"
+                >自动隐藏</button>
+              </div>
+            </div>
+          </div>
+          <div class="setting-item">
+            <div class="setting-info">
+              <span class="setting-label">唤出延迟</span>
+              <span class="setting-desc">鼠标离开后导航栏隐藏的延迟时间</span>
+            </div>
+            <div class="setting-control">
+              <button class="num-btn" @click="updateConfig('navHoverDelay', Math.max(1000, config.navHoverDelay - 500))">-</button>
+              <span class="num-value">{{ config.navHoverDelay / 1000 }}s</span>
+              <button class="num-btn" @click="updateConfig('navHoverDelay', Math.min(10000, config.navHoverDelay + 500))">+</button>
+            </div>
+          </div>
+          <div class="setting-item">
+            <div class="setting-info">
+              <span class="setting-label">透明度</span>
+              <span class="setting-desc">调整导航栏背景透明度</span>
+            </div>
+            <div class="setting-control">
+              <button class="num-btn" @click="updateConfig('navOpacity', Math.max(50, config.navOpacity - 5))">-</button>
+              <span class="num-value">{{ config.navOpacity }}%</span>
+              <button class="num-btn" @click="updateConfig('navOpacity', Math.min(100, config.navOpacity + 5))">+</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="settings-section">
+        <h2 class="section-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+          </svg>
+          学习设置
+        </h2>
+        <div class="settings-card">
+          <div class="setting-item">
+            <div class="setting-info">
+              <span class="setting-label">卡片大小</span>
+              <span class="setting-desc">调整学习卡片尺寸</span>
+            </div>
+            <div class="setting-control">
+              <div class="mode-selector">
+                <button
+                  class="mode-btn"
+                  :class="{ active: config.cardSize === 'small' }"
+                  @click="updateConfig('cardSize', 'small')"
+                >小</button>
+                <button
+                  class="mode-btn"
+                  :class="{ active: config.cardSize === 'medium' }"
+                  @click="updateConfig('cardSize', 'medium')"
+                >中</button>
+                <button
+                  class="mode-btn"
+                  :class="{ active: config.cardSize === 'large' }"
+                  @click="updateConfig('cardSize', 'large')"
+                >大</button>
+              </div>
+            </div>
+          </div>
+          <div class="setting-item">
+            <div class="setting-info">
+              <span class="setting-label">字体大小</span>
+              <span class="setting-desc">调整学习界面字体大小</span>
+            </div>
+            <div class="setting-control">
+              <div class="mode-selector">
+                <button
+                  class="mode-btn"
+                  :class="{ active: config.fontSize === 'small' }"
+                  @click="updateConfig('fontSize', 'small')"
+                >小</button>
+                <button
+                  class="mode-btn"
+                  :class="{ active: config.fontSize === 'medium' }"
+                  @click="updateConfig('fontSize', 'medium')"
+                >中</button>
+                <button
+                  class="mode-btn"
+                  :class="{ active: config.fontSize === 'large' }"
+                  @click="updateConfig('fontSize', 'large')"
+                >大</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="settings-section">
+        <h2 class="section-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="10"></circle>
             <polyline points="12 6 12 12 16 14"></polyline>
           </svg>
@@ -146,6 +263,49 @@
                   :class="{ active: config.theme === 'auto' }"
                   @click="updateConfig('theme', 'auto')"
                 >跟随系统</button>
+              </div>
+            </div>
+          </div>
+          <div class="setting-item">
+            <div class="setting-info">
+              <span class="setting-label">界面动效</span>
+              <span class="setting-desc">开启/关闭非必要动画效果，关闭可提升性能</span>
+            </div>
+            <div class="setting-control">
+              <label class="toggle" role="switch" :aria-checked="config.enableAnimations" aria-label="界面动效开关">
+                <input
+                  type="checkbox"
+                  :checked="config.enableAnimations"
+                  @change="updateConfig('enableAnimations', $event.target.checked)"
+                  aria-describedby="animation-desc"
+                />
+                <span class="toggle-slider" aria-hidden="true"></span>
+              </label>
+              <span id="animation-desc" class="sr-only">开启或关闭界面动画效果，关闭后可提升低性能设备的响应速度</span>
+            </div>
+          </div>
+          <div class="setting-item" v-if="config.enableAnimations">
+            <div class="setting-info">
+              <span class="setting-label">动效速度</span>
+              <span class="setting-desc">调整动画过渡速度</span>
+            </div>
+            <div class="setting-control">
+              <div class="mode-selector">
+                <button
+                  class="mode-btn"
+                  :class="{ active: config.animationSpeed === 'slow' }"
+                  @click="updateConfig('animationSpeed', 'slow')"
+                >慢速</button>
+                <button
+                  class="mode-btn"
+                  :class="{ active: config.animationSpeed === 'normal' }"
+                  @click="updateConfig('animationSpeed', 'normal')"
+                >标准</button>
+                <button
+                  class="mode-btn"
+                  :class="{ active: config.animationSpeed === 'fast' }"
+                  @click="updateConfig('animationSpeed', 'fast')"
+                >快速</button>
               </div>
             </div>
           </div>
@@ -306,6 +466,68 @@
       <section class="settings-section">
         <h2 class="section-title">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+            <line x1="6" y1="8" x2="6" y2="8"></line>
+            <line x1="10" y1="8" x2="10" y2="8"></line>
+            <line x1="14" y1="8" x2="14" y2="8"></line>
+            <line x1="18" y1="8" x2="18" y2="8"></line>
+            <line x1="6" y1="12" x2="6" y2="12"></line>
+            <line x1="10" y1="12" x2="10" y2="12"></line>
+            <line x1="14" y1="12" x2="14" y2="12"></line>
+            <line x1="18" y1="12" x2="18" y2="12"></line>
+            <line x1="8" y1="16" x2="16" y2="16"></line>
+          </svg>
+          快捷键
+        </h2>
+        <div class="settings-card">
+          <div class="setting-item shortcut-item" v-for="(shortcut, action) in shortcuts" :key="action">
+            <div class="setting-info">
+              <span class="setting-label">{{ SHORTCUT_LABELS[action] }}</span>
+            </div>
+            <div class="setting-control shortcut-control">
+              <div
+                class="shortcut-key-display"
+                :class="{ 'is-recording': recordingAction === action, 'has-conflict': shortcutConflicts[action] }"
+                @click="startRecording(action)"
+                @keydown.prevent="handleShortcutKeydown($event, action)"
+                :tabindex="0"
+              >
+                <template v-if="recordingAction === action">
+                  <span class="recording-text">按键中...</span>
+                </template>
+                <template v-else>
+                  {{ formatShortcut(shortcut) }}
+                </template>
+              </div>
+              <button
+                v-if="shortcut !== DEFAULT_SHORTCUTS[action]"
+                class="reset-shortcut-btn"
+                @click="resetShortcut(action)"
+                title="恢复默认"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="1 4 1 10 7 10"></polyline>
+                  <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+                </svg>
+              </button>
+              <span v-if="shortcutConflicts[action]" class="shortcut-conflict-msg">{{ shortcutConflicts[action] }}</span>
+            </div>
+          </div>
+          <div class="shortcut-actions">
+            <button class="action-btn reset-all-btn" @click="resetAllShortcuts">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="1 4 1 10 7 10"></polyline>
+                <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+              </svg>
+              恢复所有默认快捷键
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section class="settings-section">
+        <h2 class="section-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="10"></circle>
             <line x1="12" y1="16" x2="12" y2="12"></line>
             <line x1="12" y1="8" x2="12.01" y2="8"></line>
@@ -371,6 +593,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '../stores/userStore'
+import { SHORTCUT_LABELS, DEFAULT_SHORTCUTS, formatShortcut, eventToShortcut, validateShortcut, isShortcutConflict, getConflictReason, normalizeShortcut } from '../utils/shortcutManager.js'
 
 const emit = defineEmits([])
 
@@ -379,6 +602,10 @@ const userStore = useUserStore()
 const fileInput = ref(null)
 const showClearConfirm = ref(false)
 const notificationPermission = ref('default')
+
+const shortcuts = ref({ ...DEFAULT_SHORTCUTS })
+const recordingAction = ref(null)
+const shortcutConflicts = ref({})
 
 const isFirstSetup = computed(() => {
   return !userStore.studyPlan?.examDate
@@ -512,6 +739,60 @@ function openFeedback() {
   window.open('https://github.com/zoggin/zoggin-web/issues', '_blank')
 }
 
+function startRecording(action) {
+  recordingAction.value = action
+  shortcutConflicts.value = { ...shortcutConflicts.value, [action]: null }
+  
+  const el = document.activeElement
+  if (el && el.classList.contains('shortcut-key-display')) {
+    el.focus()
+  }
+}
+
+function handleShortcutKeydown(event, action) {
+  const shortcut = eventToShortcut(event)
+  if (!shortcut) return
+  
+  const validation = validateShortcut(shortcut)
+  if (!validation.valid) {
+    shortcutConflicts.value = { ...shortcutConflicts.value, [action]: validation.error }
+    return
+  }
+  
+  const normalized = normalizeShortcut(shortcut)
+  
+  if (isShortcutConflict(normalized)) {
+    const reason = getConflictReason(normalized)
+    shortcutConflicts.value = { ...shortcutConflicts.value, [action]: `与系统快捷键「${reason}」冲突` }
+    return
+  }
+  
+  for (const [actionKey, actionShortcut] of Object.entries(shortcuts.value)) {
+    if (actionKey !== action && normalizeShortcut(actionShortcut).toLowerCase() === normalized.toLowerCase()) {
+      shortcutConflicts.value = { ...shortcutConflicts.value, [action]: `该快捷键已被「${SHORTCUT_LABELS[actionKey]}」使用` }
+      return
+    }
+  }
+  
+  shortcuts.value = { ...shortcuts.value, [action]: normalized }
+  shortcutConflicts.value = { ...shortcutConflicts.value, [action]: null }
+  recordingAction.value = null
+  
+  userStore.updateConfig({ shortcuts: shortcuts.value })
+}
+
+function resetShortcut(action) {
+  shortcuts.value = { ...shortcuts.value, [action]: DEFAULT_SHORTCUTS[action] }
+  shortcutConflicts.value = { ...shortcutConflicts.value, [action]: null }
+  userStore.updateConfig({ shortcuts: shortcuts.value })
+}
+
+function resetAllShortcuts() {
+  shortcuts.value = { ...DEFAULT_SHORTCUTS }
+  shortcutConflicts.value = {}
+  userStore.updateConfig({ shortcuts: shortcuts.value })
+}
+
 onMounted(async () => {
   await Promise.all([
     userStore.loadConfig(),
@@ -554,12 +835,14 @@ onMounted(async () => {
   cursor: pointer;
   color: #555;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-  transition: all 0.2s;
+  transition: transform var(--anim-duration-fast, 150ms) ease,
+              color var(--anim-duration-fast, 150ms) ease;
+  will-change: transform;
 }
 
 .back-btn:hover {
   color: #667eea;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  transform: translate3d(-1px, 0, 0);
 }
 
 .settings-title {
@@ -713,7 +996,10 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
+  transition: transform var(--anim-duration-fast, 150ms) ease,
+              border-color var(--anim-duration-fast, 150ms) ease,
+              background-color var(--anim-duration-fast, 150ms) ease;
+  will-change: transform;
 }
 
 .num-btn:hover {
@@ -723,7 +1009,7 @@ onMounted(async () => {
 }
 
 .num-btn:active {
-  transform: scale(0.95);
+  transform: scale3d(0.95, 0.95, 1);
 }
 
 .num-value {
@@ -766,7 +1052,9 @@ onMounted(async () => {
   font-size: 0.82rem;
   color: #777;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: background-color var(--anim-duration-fast, 150ms) ease,
+              color var(--anim-duration-fast, 150ms) ease,
+              font-weight 0ms;
   white-space: nowrap;
 }
 
@@ -790,9 +1078,13 @@ onMounted(async () => {
 }
 
 .toggle input {
+  position: absolute;
   opacity: 0;
-  width: 0;
-  height: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  cursor: pointer;
+  z-index: 1;
 }
 
 .toggle-slider {
@@ -803,7 +1095,8 @@ onMounted(async () => {
   bottom: 0;
   background: #d1d5db;
   border-radius: 26px;
-  transition: all 0.3s;
+  transition: background-color var(--anim-duration-fast, 150ms) ease;
+  pointer-events: none;
 }
 
 .toggle-slider::before {
@@ -815,8 +1108,9 @@ onMounted(async () => {
   bottom: 3px;
   background: white;
   border-radius: 50%;
-  transition: all 0.3s;
+  transition: transform var(--anim-duration-normal, 200ms) var(--anim-easing-smooth, cubic-bezier(0.34, 1.56, 0.64, 1));
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  pointer-events: none;
 }
 
 .toggle input:checked + .toggle-slider {
@@ -824,7 +1118,28 @@ onMounted(async () => {
 }
 
 .toggle input:checked + .toggle-slider::before {
-  transform: translateX(22px);
+  transform: translate3d(22px, 0, 0);
+}
+
+.toggle input:focus + .toggle-slider {
+  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.3);
+}
+
+.toggle input:focus-visible + .toggle-slider {
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.4);
+}
+
+/* 屏幕阅读器专用样式 */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .action-btn {
@@ -873,6 +1188,100 @@ onMounted(async () => {
 
 .file-input {
   display: none;
+}
+
+.shortcut-item {
+  gap: 0.75rem;
+}
+
+.shortcut-control {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.shortcut-key-display {
+  min-width: 120px;
+  padding: 0.5rem 0.75rem;
+  background: #f8f9fa;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #333;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  user-select: none;
+}
+
+.shortcut-key-display:hover {
+  border-color: #667eea;
+  background: #f0f4ff;
+}
+
+.shortcut-key-display.is-recording {
+  border-color: #667eea;
+  background: #eef2ff;
+  color: #667eea;
+  animation: pulse 1.5s infinite;
+}
+
+.shortcut-key-display.has-conflict {
+  border-color: #ff6b6b;
+  background: #fef2f2;
+  color: #ff6b6b;
+}
+
+.recording-text {
+  font-style: italic;
+}
+
+.reset-shortcut-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
+  background: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.reset-shortcut-btn:hover {
+  border-color: #667eea;
+  color: #667eea;
+  background: #f0f4ff;
+}
+
+.shortcut-conflict-msg {
+  font-size: 0.75rem;
+  color: #ff6b6b;
+  margin-left: 0.25rem;
+}
+
+.shortcut-actions {
+  padding: 1rem 1.25rem;
+  border-top: 1px solid #f0f2f5;
+  display: flex;
+  justify-content: center;
+}
+
+.reset-all-btn {
+  font-size: 0.85rem;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
 }
 
 .modal-overlay {
@@ -930,7 +1339,9 @@ onMounted(async () => {
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: transform var(--anim-duration-fast, 150ms) ease,
+              background-color var(--anim-duration-fast, 150ms) ease;
+  will-change: transform;
 }
 
 .modal-btn.cancel {
